@@ -1,15 +1,15 @@
-import css from "./SearchBar.module.css";
 import toast from "react-hot-toast";
+import css from "./SearchBar.module.css";
 
 interface SearchBarProps {
   action: (formData: FormData) => Promise<void>;
 }
 
 export default function SearchBar({ action }: SearchBarProps) {
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const formData = new FormData(event.currentTarget);
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
     const query = (formData.get("query") as string).trim();
 
     if (!query) {
@@ -18,6 +18,7 @@ export default function SearchBar({ action }: SearchBarProps) {
     }
 
     await action(formData);
+    form.reset();
   };
 
   return (
@@ -26,8 +27,9 @@ export default function SearchBar({ action }: SearchBarProps) {
         className={css.input}
         type="text"
         name="query"
-        placeholder="Search movies..."
         autoComplete="off"
+        autoFocus
+        placeholder="Search movies..."
       />
       <button className={css.button} type="submit">
         Search
