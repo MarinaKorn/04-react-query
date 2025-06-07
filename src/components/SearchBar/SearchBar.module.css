@@ -55,8 +55,3 @@
 .button:hover {
   background-color: #004182;
 }
-.form {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-}

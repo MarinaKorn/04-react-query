@@ -20,14 +20,14 @@ export default function SearchBar({ action }: SearchBarProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className={css.form}>
+    <form className={css.form} onSubmit={handleSubmit}>
       <input
-        type="text"
-        name="query"
-        placeholder="Search movies..."
         className={css.input}
+        name="query"
+        type="text"
+        placeholder="Search movies..."
       />
-      <button type="submit" className={css.button}>
+      <button className={css.button} type="submit">
         Search
       </button>
     </form>
