@@ -41,7 +41,11 @@ export default function MovieModal({ movie, onClose }: MovieModalProps) {
         </button>
         <h2 className={css.title}>{movie.title}</h2>
         {backdropUrl && (
-          <img src={backdropUrl} alt={movie.title} className={css.image} />
+          <img
+            src={backdropUrl}
+            alt={movie.title}
+            className={css.image}
+          />
         )}
         <p className={css.overview}>{movie.overview}</p>
         <p className={css.info}>
