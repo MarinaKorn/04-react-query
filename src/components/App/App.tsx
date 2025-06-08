@@ -34,11 +34,12 @@ export default function App() {
   const movies = data?.results ?? [];
   const totalPages = data?.total_pages ?? 0;
 
-  const handleSearch = (newQuery: string) => {
-    if (newQuery === query) return;
-    setQuery(newQuery);
+  const handleSearch = (formData: FormData) => {
+    const query = (formData.get("query") as string).trim();
     setPage(1);
+    setQuery(query);
   };
+  
 
   const handlePageChange = ({ selected }: { selected: number }) => {
     setPage(selected + 1);
@@ -62,7 +63,8 @@ export default function App() {
           >
             Powered by TMDB
           </a>
-          <SearchBar onSubmit={handleSearch} />
+          <SearchBar action={handleSearch} />
+
         </div>
       </header>
 
