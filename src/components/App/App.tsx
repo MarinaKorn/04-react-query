@@ -1,67 +1,54 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import toast, { Toaster } from "react-hot-toast";
 import ReactPaginate from "react-paginate";
 
-import css from "./App.module.css";
-
 import SearchBar from "../SearchBar/SearchBar";
 import MovieGrid from "../MovieGrid/MovieGrid";
+import MovieModal from "../MovieModal/MovieModal";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
-import MovieModal from "../MovieModal/MovieModal";
 
 import { fetchMovies } from "../../services/movieService";
-import type { Movie } from "../../types/movie";
+import { type Movie } from "../../types/movie";
+
+import css from "./App.module.css";
 
 export default function App() {
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
-  const handleSearch = async (formData: FormData) => {
-    const searchQuery = (formData.get("query") as string).trim();
-    if (!searchQuery) {
-      toast.error("Please enter your search query.");
-      return;
-    }
+  const {
+    data,
+    isLoading,
+    isError,
+    isSuccess,
+  } = useQuery({
+    queryKey: ["movies", query, page],
+    queryFn: () => fetchMovies(query, page),
+    enabled: query !== "",
+    placeholderData: (prev) => prev,
+  });
 
-    try {
-      setIsLoading(true);
-      setIsError(false);
-      setQuery(searchQuery);
-      setPage(1);
+  const movies = data?.results ?? [];
+  const totalPages = data?.total_pages ?? 0;
 
-      const data = await fetchMovies(searchQuery, 1);
-      setMovies(data.results);
-      setTotalPages(data.total_pages);
-    } catch {
-      setIsError(true);
-      toast.error("Something went wrong. Please try again later.");
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSearch = (newQuery: string) => {
+    if (newQuery === query) return;
+    setQuery(newQuery);
+    setPage(1);
   };
 
-  const handlePageChange = async ({ selected }: { selected: number }) => {
-    const newPage = selected + 1;
-    setPage(newPage);
-
-    try {
-      setIsLoading(true);
-      setIsError(false);
-      const data = await fetchMovies(query, newPage);
-      setMovies(data.results);
-    } catch {
-      setIsError(true);
-      toast.error("Something went wrong. Please try again later.");
-    } finally {
-      setIsLoading(false);
-    }
+  const handlePageChange = ({ selected }: { selected: number }) => {
+    setPage(selected + 1);
   };
+
+  useEffect(() => {
+    if (isSuccess && movies.length === 0) {
+      toast("No movies found.");
+    }
+  }, [isSuccess, movies.length]);
 
   return (
     <>
@@ -75,7 +62,7 @@ export default function App() {
           >
             Powered by TMDB
           </a>
-          <SearchBar action={handleSearch} />
+          <SearchBar onSubmit={handleSearch} />
         </div>
       </header>
 
