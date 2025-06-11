@@ -63,7 +63,7 @@ export default function App() {
           >
             Powered by TMDB
           </a>
-          <SearchBar action={handleSearch} />
+          <SearchBar onSubmit={handleSearch} />
 
         </div>
       </header>
