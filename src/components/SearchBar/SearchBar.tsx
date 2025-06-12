@@ -19,7 +19,6 @@ export default function SearchBox({ onSubmit, value, onChange }: SearchBoxProps)
       toast.error('Please enter a search query!');
       return;
     }
-
     onSubmit(query);
   };
 
