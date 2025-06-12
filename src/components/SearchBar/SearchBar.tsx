@@ -1,6 +1,6 @@
 import type { FormEvent } from 'react';
 import toast from 'react-hot-toast';
-import css from './SearchBox.module.css';
+import css from './SearchBar.module.css';
 
 interface SearchBoxProps {
   onSubmit: (query: string) => void;
