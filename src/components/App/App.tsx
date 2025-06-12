@@ -76,7 +76,6 @@ export default function App() {
             breakLabel="..."
           />
         )}
-
         {selectedMovie && (
           <MovieModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />
         )}
