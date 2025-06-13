@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useDebounce } from 'use-debounce';
 import ReactPaginate from 'react-paginate';
+import toast, { Toaster } from 'react-hot-toast';
+
 import MovieGrid from '../MovieGrid/MovieGrid';
 import MovieModal from '../MovieModal/MovieModal';
 import Loader from '../Loader/Loader';
@@ -15,7 +17,6 @@ export default function App() {
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
-
   const [debouncedQuery] = useDebounce(query, 300);
 
   const {
@@ -26,7 +27,7 @@ export default function App() {
     queryKey: ['movies', debouncedQuery, page],
     queryFn: () => fetchMovies(debouncedQuery, page),
     enabled: debouncedQuery.trim() !== '',
-    placeholderData: (prev) => prev,
+    placeholderData: prev => prev,
   });
 
   const movies = data?.results || [];
@@ -37,8 +38,16 @@ export default function App() {
     setPage(1);
   };
 
+  useEffect(() => {
+    if (!isLoading && data && data.results.length === 0) {
+      toast('No results found');
+    }
+  }, [data, isLoading]);
+
   return (
     <div className={css.app}>
+      <Toaster />
+
       <header className={css.header}>
         <div className={css.container}>
           <a
@@ -50,11 +59,7 @@ export default function App() {
             Powered by TMDB
           </a>
 
-          <SearchBar
-            value={query}
-            onChange={setQuery}
-            onSubmit={handleSearch}
-          />
+          <SearchBar onSubmit={handleSearch} />
         </div>
       </header>
 

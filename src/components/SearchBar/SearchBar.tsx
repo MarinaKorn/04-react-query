@@ -1,36 +1,29 @@
-import type { FormEvent } from 'react';
 import toast from 'react-hot-toast';
 import css from './SearchBar.module.css';
 
-interface SearchBoxProps {
+interface SearchBarProps {
   onSubmit: (query: string) => void;
-  value: string;
-  onChange: (value: string) => void;
 }
 
-export default function SearchBox({ onSubmit, value, onChange }: SearchBoxProps) {
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
+export default function SearchBar({ onSubmit }: SearchBarProps) {
+  const handleAction = async (formData: FormData) => {
     const query = (formData.get('query') as string).trim();
 
     if (!query) {
       toast.error('Please enter a search query!');
       return;
     }
+
     onSubmit(query);
   };
 
   return (
-    <form className={css.form} onSubmit={handleSubmit}>
+    <form className={css.form} action={handleAction}>
       <input
         className={css.input}
         type="text"
         name="query"
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        placeholder="Search notes"
+        placeholder="Search movies"
       />
       <button type="submit" className={css.button}>Search</button>
     </form>
