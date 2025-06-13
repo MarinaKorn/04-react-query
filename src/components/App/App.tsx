@@ -1,28 +1,31 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useDebounce } from 'use-debounce';
+import ReactPaginate from 'react-paginate';
 import MovieGrid from '../MovieGrid/MovieGrid';
 import MovieModal from '../MovieModal/MovieModal';
 import Loader from '../Loader/Loader';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import SearchBar from '../SearchBar/SearchBar';
-import css from './App.module.css';
-import ReactPaginate from 'react-paginate';
 import { fetchMovies } from '../../services/movieService';
 import type { Movie } from '../../types/movie';
+import css from './App.module.css';
 
 export default function App() {
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
+  const [debouncedQuery] = useDebounce(query, 300);
+
   const {
     data,
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ['movies', query, page],
-    queryFn: () => fetchMovies(query, page),
-    enabled: query.trim() !== '',
+    queryKey: ['movies', debouncedQuery, page],
+    queryFn: () => fetchMovies(debouncedQuery, page),
+    enabled: debouncedQuery.trim() !== '',
     placeholderData: (prev) => prev,
   });
 
@@ -76,6 +79,7 @@ export default function App() {
             breakLabel="..."
           />
         )}
+
         {selectedMovie && (
           <MovieModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />
         )}
